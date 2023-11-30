@@ -1,0 +1,164 @@
+{% extends 'base\base.html' %}
+{% block breadcrumb %}
+
+<div>
+    <h1><i class="app-app-menu__icon fa-sharp fa-solid fa-user-plus"></i> Add User</h1>
+    <p>As an Admin you can add new users</p>
+</div>
+<ul class="app-breadcrumb breadcrumb">
+    <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+    <li class="breadcrumb-item"><a href="#">Add User</a></li>
+</ul>
+{% endblock breadcrumb %}
+
+{% block content %}
+
+<div class='content_msg' id='msg' style='width:88%; margin-left : 180px; margin-bottom: 20px;'>
+    {% include 'accounts/messages.html'%}
+  </div>
+<div class="pwd_change">
+<form action="#" method="post" class="signup-form">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label class="label" for="email">Email Address</label>
+                {{ form.email }}
+                <span class="text-danger">{{ form.errors.email }}</span>
+         
+                <label class="label" >Name</label>
+                {{ form.name }}
+                <span class="text-danger">{{ form.errors.name}}</span>
+            
+                <label class="label" >Surname</label>
+                {{ form.surname }}
+                <span class="text-danger">{{ form.errors.surname }}</span>
+
+                <label class="label" >Phone Number</label>
+                {{ form.phone_number }}
+                <span class="text-danger">{{ form.errors.phone_number }}</span>
+           
+     
+                <label class="label" for="password">Password</label>
+                {{ form.password1 }}
+                <span class="text-danger">{{ form.errors.password1 }}</span>
+          
+            
+                <label class="label" for="password">Confirm Password</label>
+                {{ form.password2 }}
+                <span class="text-danger">{{ form.errors.password2 }}</span>
+            
+        </div>
+       
+        <div class="col-md-12">
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Create an account</button>
+            </div>
+        </div>
+    </div>
+</form>
+</div>
+{% endblock %}
+{% block extrascripts%}
+<script>
+    setTimeout(function(){
+        if ($('#msg').length > 0) {
+            $('#msg').remove();
+        }
+    },2000);
+</script>
+{% endblock extrascripts %}
+
+
+
+
+{% comment %} 
+<!DOCTYPE html>
+<html lang="en">
+	{% load static %}
+    <head>
+        <title>Sign Up | Event Calendar</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+        <link rel="stylesheet" href="{% static 'css/accounts.css' %}" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="forms-container">
+              
+           
+          
+                
+                <div class="row justify-content-center">
+                    <div class="col-md-12">
+                        
+                            <div class="login-wrap">
+                                <div class="row justify-content-center py-md-5">
+                                    <div class="col-lg-9">
+                                        <div class="social-wrap">
+                                            <h3 class="mb-3 text-center">Signup with this services</h3>
+                                           
+                                        </div>
+                                        <form action="#" method="post" class="signup-form">
+                                            {% csrf_token %}
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="label" for="email">Email Address</label>
+                                                        {{ form.email }}
+                                                        <span class="text-danger">{{ form.errors.email }}</span>
+                                                 
+                                                        <label class="label" >Name</label>
+                                                        {{ form.name }}
+                                                        <span class="text-danger">{{ form.errors.name}}</span>
+                                                    
+                                                        <label class="label" >Surname</label>
+                                                        {{ form.surname }}
+                                                        <span class="text-danger">{{ form.errors.surname }}</span>
+
+                                                        <label class="label" >Phone Number</label>
+                                                        {{ form.phone_number }}
+                                                        <span class="text-danger">{{ form.errors.phone_number }}</span>
+                                                   
+                                             
+                                                        <label class="label" for="password">Password</label>
+                                                        {{ form.password1 }}
+                                                        <span class="text-danger">{{ form.errors.password1 }}</span>
+                                                  
+                                                    
+                                                        <label class="label" for="password">Confirm Password</label>
+                                                        {{ form.password2 }}
+                                                        <span class="text-danger">{{ form.errors.password2 }}</span>
+                                                    
+                                                </div>
+                                               
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn btn-primary">Create an account</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <div class="w-100">
+                                            <p class="mt-4">I'm already a member! <a href="{% url 'accounts:signin' %}">Sign In</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+      
+    </div>
+        </section>
+        {% include 'base/js.html' %}
+    </body>
+</html> {% endcomment %}

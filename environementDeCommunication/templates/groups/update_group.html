@@ -1,0 +1,32 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Edit Group{% endblock title %}
+
+{% block breadcrumb %}
+  <div>
+    <h1><i class="fa fa-dashboard"></i> Gestion Des Utilisateurs</h1>
+    <p>Admin's Dashboard</p>
+  </div>
+  <ul class="app-breadcrumb breadcrumb">
+    <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+    <li class="breadcrumb-item"><a href="{% url 'groups:group_list' %}">Groups List</a></li>
+    <li class="breadcrumb-item">Edit Group</li>
+  </ul>
+{% endblock breadcrumb %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-8">
+      <div class="tile">
+        <div class="tile-body">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Update Group</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

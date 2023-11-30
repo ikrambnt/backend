@@ -1,0 +1,145 @@
+{% extends 'base/base.html' %} {% load static %} {% block title %}Groups List
+{% endblock title %} {% block breadcrumb %}
+<div>
+  <h1><i class="fa fa-dashboard"></i> Gestion Des Utilisateurs</h1>
+  <p>Admin's Dashboard</p>
+</div>
+<ul class="app-breadcrumb breadcrumb">
+  <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+  <li class="breadcrumb-item"><a href="#">Groups List</a></li>
+</ul>
+{% endblock breadcrumb %} {% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="tile">
+      <div class="tile-body">
+        <div class="table-responsive">
+          <div
+            id="sampleTable_wrapper"
+            class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer"
+          >
+            <div class="row">
+              <div class="col-sm-12">
+                <a href="{% url 'rooms' %}" class="btn btn-primary">Go to General Rooms</a>
+                <table
+                  class="table table-hover table-bordered dataTable no-footer"
+                  id="sampleTable1"
+                  role="grid"
+                  aria-describedby="sampleTable_info"
+                >
+                <thead> 
+                    <tr role="row"> 
+                      <th
+                        class="sorting_asc"
+                        tabindex="0"
+                        aria-controls="sampleTable"
+                        rowspan="1"
+                        colspan="1"
+                        aria-sort="ascending"
+                        aria-label="Name: activate to sort column descending"
+                        style="width: 261.641px"
+                      > 
+                        SL
+                      </th> 
+                      <th
+                        class="sorting"
+                        tabindex="0"
+                        aria-controls="sampleTable"
+                        rowspan="1"
+                        colspan="1"
+                        aria-label="Position: activate to sort column ascending"
+                        style="width: 417.312px"
+                      > 
+                        Group Name
+                      </th> 
+                      <th
+                        class="sorting"
+                        tabindex="0"
+                        aria-controls="sampleTable"
+                        rowspan="1"
+                        colspan="1"
+                        aria-label="Age: activate to sort column ascending"
+                        style="width: 102.141px"
+                      > 
+                        Participants
+                      </th> 
+                      {% comment %} <th
+                        class="sorting"
+                        tabindex="0"
+                        aria-controls="sampleTable"
+                        rowspan="1"
+                        colspan="1"
+                        aria-label="Options: activate to sort column ascending"
+                      >
+                        Options
+                      </th>  {% endcomment %}
+                    </tr> 
+                  </thead> 
+
+                  <tbody> 
+                    {% for group in groups %} 
+                      <tr role="row" class="{% cycle 'odd' 'even' %}"> 
+                        <td class="sorting_1"><a href="{% url 'groups:update_group' group.id %}">{{ forloop.counter }} </a></td> 
+                        <td>{{ group.name }}</td> 
+                        <td> 
+                          {% for participant in group.participants.all %} 
+                            {{ participant.name }} {{ participant.surname }},
+                          {% endfor %} 
+                        </td> 
+                        {% comment %} <td>
+                          <button class="btn btn-warning btn-sm"> <a href="{% url 'groups:update_group' group.id %}" >Edit</a> </button>
+                          <button class="btn btn-danger btn-sm" onclick="confirmDelete({{ group.id }})">Delete</button>
+                        </td> {% endcomment %}
+                      </tr> 
+                    {% endfor %} 
+                  </tbody> 
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+          <a href="{% url 'groups:create_group' %}" class="btn btn-primary">Create Group</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %} {% block extrascripts %}
+<script
+  type="text/javascript"
+  src="{% static 'js/plugins/jquery.dataTables.min.js' %}"
+></script>
+<script
+  type="text/javascript"
+  src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"
+></script>
+<script type="text/javascript">
+  $("#sampleTable1").DataTable();
+</script>
+
+
+<script>
+    function confirmDelete(groupId) {
+      if (confirm('Are you sure you want to delete this group?')) {
+        // Send AJAX request to delete the group
+        $.ajax({
+          type: 'POST',
+          url: '{% url "groups:delete_group" %}',
+          data: {
+            'group_id': groupId,
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+          },
+          success: function (response) {
+            // Handle success, e.g., remove the deleted row from the table
+            alert('Group deleted successfully!');
+            location.reload(); // You can use this or update the DOM as needed
+          },
+          error: function (error) {
+            // Handle error
+            alert('Error deleting group');
+          }
+        });
+      }
+    }
+  </script>
+
+{% endblock extrascripts %}

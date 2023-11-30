@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Post List{% endblock title %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+      <a class="navbar-brand" href="#">clander</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                  <a class="nav-link" href="{% url 'posts:post_create' %}">Create Post</a>
+              </li>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+<div class="container mt-5">
+    {% for post in posts %}
+        <div class="card mx-auto mb-4 post-card" style="max-width: 600px;">
+            <div class="card-header bg-light">
+                <h3 class="text-primary mb-0">{{ post.title }}</h3>
+                <p class="text-muted mb-0">by {{ post.author }}<br>at {{ post.created_at }}</p>
+            </div>
+            <div class="card-body post-content" data-post-id="{{ post.id }}">
+                <p>
+                    <span class="initial-content">{{ post.content|safe|slice:":25" }}</span>
+                    <span class="dots"></span>
+                    <span class="more">{{ post.content|safe|slice:"25:" }}</span>
+                    {% if post.content|wordcount > 25 %}
+                        <button class="btn-show-more" onclick="showMoreFunction(this)">Show more</button>
+                    {% endif %}
+                </p>
+                {% if post.image %}
+                    <div class="image-container mb-3">
+                        <img src="{{ post.image.url }}" alt="Post Image" class="img-fluid rounded">
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <div>
+                    <form method="post" action="{% url 'posts:post_detail' pk=post.pk %}">
+                        {% csrf_token %}
+                        {{ comment_form.as_p }}
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-comment"></i> Add Comment</button>
+                    </form>
+                </div>
+                <div class="btn-group">
+                    {% if user.is_authenticated and user == post.author %}
+                        <form method="post" action="{% url 'posts:post_edit' pk=post.pk %}">
+                            {% csrf_token %}
+                            <button  type="submit" class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Edit</button>
+                        </form>
+                        <form method="post" action="{% url 'posts:post_delete' pk=post.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Delete</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    function showMoreFunction(button) {
+        var postCard = button.closest('.post-card');  // Trouve l'élément parent avec la classe post-card
+        var dots = postCard.querySelector('.dots');
+        var moreText = postCard.querySelector('.more');
+
+        if (!dots || !moreText) {
+            console.error("Elements not found");
+            return;
+        }
+
+        var dotsDisplay = window.getComputedStyle(dots).getPropertyValue('display');
+
+        if (dotsDisplay === "inline") {
+            dots.style.display = "none";
+            button.innerHTML = "Show less";
+            moreText.style.display = "inline";
+        } else {
+            dots.style.display = "inline";
+            button.innerHTML = "Show more";
+            moreText.style.display = "none";
+        }
+    }
+</script>
+
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        color: #333;
+        font-family: 'Arial';
+    }
+
+    .post-card {
+        border: 2px solid #9D76C1;
+        border-radius: 20px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    .card-header {
+        padding: 20px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-text {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .image-container {
+        overflow: hidden;
+        border-radius: 20px;
+    }
+
+    .image-container img {
+        width: 100%;
+        height: 100%;
+        border-radius: 20px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-footer {
+        padding: 20px;
+        border-top: 2px solid #9D76C1;
+    }
+
+    .btn {
+        border-radius: 5px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background-color: green;
+        color: #fff;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .btn-sm {
+        font-size: 14px;
+    }
+
+    .btn-show-more {
+        color: #007bff;
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 14px;
+        border: none; 
+        background: none;
+        padding: 0; 
+    }
+
+    .dots {
+        display: inline;
+    }
+
+    .more {
+        display: none;
+    }
+</style>
+{% endblock %}

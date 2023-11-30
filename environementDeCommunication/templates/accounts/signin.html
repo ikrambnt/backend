@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% load static %}
+  <head>
+    <title>Sign In | Event Calendar</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+      rel="stylesheet"
+    />
+
+    {% comment %}
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    {% endcomment %}
+    
+    <link rel="stylesheet" href="{% static 'css/signincss.css' %}" />
+  </head>
+  <body>
+    <section class="side">
+      
+
+      <img src="{% static 'images/calendar.png' %}" alt="Email Icon">
+    </section>
+
+    <section class="main">
+      <div class="login-container">
+        <p class="title">Welcome back</p>
+        <div class="separator"></div>
+        <p class="welcome-message">
+          Please, provide login credential to proceed and have access to your Calendar
+        </p>
+
+      
+        <form method="post" class="signup-form">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <div class="input-field">
+                  <label class="label" for="{{ form.email.id_for_label }}">Email</label>
+                  {{ form.email }}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <div class="input-field">
+                  <label class="label" for="{{ form.password.id_for_label }}">Password</label>
+                  {{ form.password }}
+                </div>
+              </div>
+            </div>
+            {% comment %} {% if form.captcha %}
+            <div class="col-md-12">
+              <div class="form-group">
+                <label for="{{ form.captcha.id_for_label }}">Enter the text you see in the image below:</label>
+                {{ form.captcha }}
+                {% if form.captcha.errors %}
+                <div class="invalid-feedback d-block">{{ form.captcha.errors }}</div>
+                {% endif %}
+              </div>
+            </div> 
+            {% endif %} {% endcomment %}
+            <div class="col-md-12">
+              <div class="form-group">
+                <button class="submit">Sign In</button>
+                <p><a href="{% url 'accounts:password_reset' %}">Forgotten your password?</a></p>
+              </div>
+            </div>
+          </div>
+        </form>
+        
+      </div>
+    </section>
+
+    
+  </body>
+</html>

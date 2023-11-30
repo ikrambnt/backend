@@ -1,0 +1,160 @@
+<!-- templates/posts/post_form.html -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ action }} Post</title>
+</head>
+<body>
+    <h1>{{ action }} Post</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+    <p><a href="{% url 'posts:post_list' %}">Back to Post List</a></p>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ action }} Post</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: white;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            background-color:#FFFBF5;
+            border-radius: 50px;
+            
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            padding: 50px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            color: #7743DB;
+            font-family: 'Verdana', sans-serif;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .form-label {
+            color: #7743DB;
+            font-weight: bold;
+            text-align: center;
+            font-family:  sans-serif;
+        }
+
+        .form-control {
+            border: 2px bold #9D76C1;
+            border-radius: 10px;
+            font-size: 14px;
+            
+        }
+
+        .form-check-label {
+            color: #713ABE;
+            font-size: 15px;
+            text-align: center;
+
+        }
+
+        .input-group-text {
+            background-color: #9D76C1;
+            color: #fff;
+            border: 2px solid #9D76C1;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background-color: green;
+            border: 40px;
+            margin-left: 500px;
+            font-size: 20px;
+            font-family:  sans-serif;
+        
+            text-align: center;
+        }
+
+        .btn-secondary {
+            background-color: #ED9ED6;
+            border: none;
+            margin-left: 450px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1>{{ action }} Post</h1>
+        <form method="post" enctype="multipart/form-data" class="mt-4">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="{{ form.title.id_for_label }}" class="form-label">Title:</label>
+                <input type="text" class="form-control" id="{{ form.title.id_for_label }}" name="{{ form.title.name }}" value="{{ post.title }}">
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.content.id_for_label }}" class="form-label">Content:</label>
+                <textarea class="form-control" id="{{ form.content.id_for_label }}" name="{{ form.content.name }}">{{ var }}</textarea>
+            </div>
+            
+            <div class="mb-3">
+                <label for="{{ form.image.id_for_label }}" class="form-label">Image:</label>
+                <div class="input-group">
+                    <input type="file" class="form-control form-control-sm" id="{{ form.image.id_for_label }}" name="{{ form.image.name }}" aria-describedby="inputGroupFileAddon">
+                    <label class="input-group-text btn btn-outline-secondary btn-sm" for="{{ form.image.id_for_label }}" id="inputGroupFileAddon">
+                        <i class="fas fa-upload"></i> Upload
+                    </label>
+                </div>
+                    {% if post.image %}
+                        <p>Image actuelle:</p>
+                        <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
+                            <img src="{{ post.image.url }}" alt="Current Image" class="img-fluid img-thumbnail" style="max-width: 400px; max-height: 250px;">
+                        </div>
+                    {% endif %}
+            </div>
+            
+
+            <div class="mb-3">
+                <label class="form-label">Privacy:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="{{ form.is_public.name }}" id="{{ form.is_public.id_for_label }}" value="True" {% if form.is_public.value == 'True' %}checked{% endif %} onchange="updatePrivacyLabel()">
+                    <label class="form-check-label" for="{{ form.is_public.id_for_label }}">
+                        <i class="fas fa-globe"></i> Public
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="{{ form.is_public.name }}" id="{{ form.is_private.id_for_label }}" value="False" {% if not form.is_public.value == 'False' %}checked{% endif %} onchange="updatePrivacyLabel()">
+                    <label class="form-check-label" for="{{ form.is_private.id_for_label }}">
+                        <i class="fas fa-lock"></i> Private
+                    </label>
+                </div>
+                <p id="privacy-label" class="mt-2">{% if form.is_public.value == 'True' %}Privacy: Public{% else %}Privacy: Private{% endif %}</p>
+            </div>
+            
+            <!-- Add other fields as needed -->
+
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+        <p class="mt-3"><a href="{% url 'posts:post_list' %}" class="btn btn-secondary">Back to Post List</a></p>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js scripts (make sure to include these dependencies) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <!-- Font Awesome icons -->
+    <script src="https://kit.fontawesome.com/a88f180d74.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

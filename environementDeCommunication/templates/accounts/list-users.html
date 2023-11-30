@@ -1,0 +1,82 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Event Dashboard{% endblock title %}
+
+{% block breadcrumb %}
+    <div>
+        <h1><i class="  fa fa-dashboard"></i> Gestion Des Utilisateurs</h1>
+        <p>Admins's Dashboard</p>
+    </div>
+    <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item"><a href="#">Users List</a></li>
+    </ul>
+{% endblock breadcrumb %}
+
+{% block content %}
+<div class="row">
+    
+
+    <div class="col-md-12">
+        <div class="tile">
+            <div class="tile-body">
+                <div class="table-responsive">
+                    <div id="sampleTable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable1" role="grid" aria-describedby="sampleTable_info">
+                                    <thead>
+                                        <tr role="row">
+                                            <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 261.641px;">SL</th>
+                                            <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 417.312px;">Event Name</th>
+                                            <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 189.281px;">Start Time</th>
+                                            <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 102.141px;">End Time</th>
+                                            <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 261.641px;">SL</th>
+                                            <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 417.312px;">Event Name</th>
+                                            <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 189.281px;">Start Time</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    
+                                    <tbody>
+                                        {% for user in users %}
+                                            <tr role="row" class="odd">
+                                                <td class="sorting_1" ><a href="{% url 'accounts:modify_user' user.id %}">{{ forloop.counter }}</a></td>
+                                                <td>{{ user.name }}</td>
+                                                <td>{{ user.surname }}</td>
+                                                <td>{{ user.email }}</td>
+                                                <td>{{ user.date_joined }}
+                                                <td>{{ user.last_updated }}</td>
+                                                {% if user.is_active %} 
+                                                <td style="text-align: center;" ><img src="{% static 'images/verifier.png' %}" alt="val" style=" width : 20px ; height : 20px;" /></td>
+
+                                                {% else %}
+                                                <td>{{ user.is_active }}</td>
+                                                {% endif %}
+
+                                                <td>
+                                                    <a href="{% url 'accounts:delete_user' user.id %}" class="btn btn-danger btn-sm">Delete</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                   
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+    <script type="text/javascript">$('#sampleTable1').DataTable();</script>
+{% endblock extrascripts %}

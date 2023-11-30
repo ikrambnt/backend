@@ -1,0 +1,506 @@
+{% extends 'base/base.html' %} {% load static %} {% block title %}Event
+Calendar{% endblock title %} {% block extracss %}
+<link href="{% static 'calender/main.css' %}" rel="stylesheet" />
+
+{% endblock extracss %} {% block breadcrumb %}
+<div>
+  <h1><i class="fa fa-calendar"></i> Calendar</h1>
+  <p>Event Calendar</p>
+</div>
+<ul class="app-breadcrumb breadcrumb">
+  <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+  <li class="breadcrumb-item"><a href="#">Calendar</a></li>
+</ul>
+{% endblock breadcrumb %} {% block content %}
+<div class='content_msg' id='msg' style='width:88%; margin-left : 180px; margin-bottom: 20px;'>
+  {% include 'accounts/messages.html'%}
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="tile">
+      <div class="col-md-9">
+        <div id="calendar"></div>
+      </div>
+
+      <div class="modal fade show" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header bg-primary">
+              <h5 class="modal-title text-white" id="exampleModalLongTitle">
+                Add New Event
+              </h5>
+              <button id="modalClose1" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form method="post">
+              {% csrf_token %}
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="recipient-name" class="col-form-label">Event Title:</label>
+                  {{ form.title }}
+                </div>
+                
+                <div class="form-group">
+                  <label for="message-text" class="col-form-label">Description:</label>
+                  {{ form.description }}
+                </div>
+                <div class="form-group">
+                  <label for="message-text" class="col-form-label">Start Date:</label>
+                  {{ form.start_time }}
+                </div>
+                <div class="form-group">
+                  <label for="message-text" class="col-form-label">End Date:</label>
+                  {{ form.end_time }}
+                </div>
+                <span class="text-danger">{{ form.error.end_time }}</span>
+                <div class="form-group">
+                  <label for="message-text" class="col-form-label">Reminder:</label>
+                  {{ form.reminder_time }}
+                </div>
+                <div class="form-group">
+                  <div style="display: flex; align-items: center;">
+                    <label style="display: inline;">Repeat:</label>
+                    <div class="input-group">
+                      <div class="input-group-append">
+                        <button id="repeatButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#repeatModal" style="border-radius: 50%; margin-left: 10px;">
+                          <i class="fa-solid fa-plus"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <label style="display: inline;">Add Users:</label>
+                    <div class="input-group">
+                      <div class="input-group-append">
+                        <button id="userButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#userModal" style="border-radius: 50%; margin-left: 10px;">
+                          <i class="fa-solid fa-plus"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button id="modalClose2" type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success">Save</button>
+              </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="userModalLabel">Users Form</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <table class="table table-hover table-bordered dataTable no-footer" id="sampleTable" role="grid" aria-describedby="sampleTable_info">
+                <thead>
+                  <tr role="row">
+                    <th class="sorting_asc" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 261.641px;">Select</th>
+                    <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 417.312px;">User Name</th>
+                    <th class="sorting" tabindex="0" aria-controls="sampleTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 189.281px;">User Surname</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for user in users %}
+                  <tr role="row" class="odd">
+                    <td><input type="checkbox" name="users" value="{{ user.id }}"></td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.surname }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Back</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="repeatModal" tabindex="-1" role="dialog" aria-labelledby="repeatModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="repeatModalLabel">Repeat Form</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form id="repeatForm">
+                <!-- Add your repeat form content here -->
+                {% csrf_token %}
+                <div id='id_value'>
+                  <label for="message-text" class="col-form-label">Value:</label>
+                  {{ formR.value }}
+                </div>
+                <div id="byweekdayContainer">
+                  <div id="byweekdayField">
+                    <label for="message-text" class="col-form-label">Byweekday:</label>
+                    {{ formR.byweekday }}
+                  </div>
+                </div>
+                <div>
+                  <label for="message-text" class="col-form-label">Until:</label>
+                  {{ formR.until }}
+                </div>
+                <div>
+                  <label for="message-text" class="col-form-label">Count:</label>
+                  {{ formR.count }}
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Back</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+      
+
+    </div>
+  </div>
+</div>
+   
+<div
+        class="modal fade show"
+        id="eventModal1"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content2">
+            <div class="modal-header bg-primary">
+              <h5 class="modal-title text-white" id="exampleModalLongTitle">
+                Event Details
+              </h5>
+              <button
+                id="modalClose3"
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div>
+              <div class="container-details" id="detail">
+                <div class="clearfix">
+                  <a
+                    class="btn btn-info right mr-2"
+                    id="buttonEdit"
+                    onclick="showEdit()"
+                  >
+                    Edit Event
+                  </a>
+                </div>
+
+                <div class="clearfix">
+                  <h3>Event Name: {{ event.title }}</h3>
+                  <p>
+                    From
+                    <span style="color: gray">{{ event.start_time }}</span> To
+                    <span style="color: gray">{{ event.end_time }}</span>
+                  </p>
+                  <hr />
+                  <p>{{ event.description }}</p>
+                </div>
+                <hr />
+
+                <table class="table table-bordered">
+                  <tbody>
+                    {% for member in eventmember %}
+                    <tr role="row">
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ member.user.name }}</td>
+                      <td>{{ member.user.email }}</td>
+                      <td>{{ member.user.email }}</td>
+                      <td>
+                        <a class="btn btn-danger">Remove</a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="container" id="editEvent" style="display: none">
+                <form method="post">
+                  {% csrf_token %}
+                  <table class="form form-table">
+                    {{ form }}
+                    <tr>
+                      <td colspan="2">
+                        <button type="submit" class="btn btn-info right">
+                          Submit
+                        </button>
+                      </td>
+                    </tr>
+                  </table>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button id="modalClose4" type="button" class="btn btn-danger">
+                 Close
+                </button>
+                {% if is_member %}
+                <button type="submit" class="btn btn-success">Save</button>
+                {% endif %}
+                
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="clearfix">
+          <a class="btn btn-info left" href="{% url 'calendarapp:calendar' %}">
+            Calendar
+          </a>
+        </div>
+      </div>
+
+      {% comment %} // thardet {% endcomment %}
+
+      <div
+        class="modal fade show"
+        id="eventModal2"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content2">
+            <div class="modal-header bg-primary">
+              <h5 class="modal-title text-white" id="exampleModalLongTitle">
+                New Event
+              </h5>
+              <button
+                id="modalClose3"
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div>
+              <div class="container">
+                <div class="clearfix">
+                  <h3>Event Name: {{ event.title }}</h3>
+                  <p>
+                    From
+                    <span style="color: gray">{{ event.start_time }}</span> To
+                    <span style="color: gray">{{ event.end_time }}</span>
+                  </p>
+                  <hr />
+                  <p>{{ event.description }}</p>
+                </div>
+                <hr />
+              </div>
+              {% if is_member %}
+                  <form method="post">
+                      {% csrf_token %}
+                      {{ form.as_p }}
+                      
+                  </form>
+                {% endif %}  
+
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Save</button>
+              
+                <button id="modalClose4" type="button" class="btn btn-danger">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %} {% block extrascripts %}
+<script src="{% static 'calender/main.js' %}"></script>
+<!-- rrule lib -->
+<script src="https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js"></script>
+
+<!-- fullcalendar bundle -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.5/index.global.min.js"></script>
+
+<!-- the rrule-to-fullcalendar connector. must go AFTER the rrule lib -->
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/rrule@6.1.5/index.global.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var calendarEl = document.getElementById("calendar");
+    var today = new Date();
+
+
+
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      headerToolbar: {
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth,timeGridWeek,timeGridDay,list",
+      },
+      initialDate: today,
+      navLinks: true,
+      selectable: true,
+      selectMirror: true,
+      select: function (arg) {
+        console.log("clicked");
+        var modal = document.getElementById("eventModal");
+        modal.style.display = "block";
+        calendar.unselect();
+      },
+
+      eventClick: function (arg) {
+        var id = calendar.getEventById(arg.event.id);
+
+         $.ajax({
+          url: "/event/" + id.id + "/details/",
+          success: function (data) {
+            $("#detail").html(data);
+
+            // show the modal
+            var modal = document.getElementById("eventModal1");
+            modal.style.display = "block";
+            calendar.unselect();
+          },
+        });
+        console.log("clicked");
+      },
+
+
+      editable: true,
+      dayMaxEvents: true, // allow "more" link when too many events
+
+
+      events: {{ events | safe }},
+
+    });
+
+    calendar.render();
+  });
+  const closeBtn1 = document.getElementById("modalClose1");
+  const closeBtn2 = document.getElementById("modalClose2");
+  closeBtn1.addEventListener("click", () => {
+    const eventModal = document.getElementById("eventModal");
+    eventModal.style.display = "none";
+  });
+  closeBtn2.addEventListener("click", () => {
+    const eventModal = document.getElementById("eventModal");
+    eventModal.style.display = "none";
+  });
+
+  const closeBtn3 = document.getElementById("modalClose3");
+  const closeBtn4 = document.getElementById("modalClose4");
+  closeBtn3.addEventListener("click", () => {
+    const eventModal = document.getElementById("eventModal1");
+    eventModal.style.display = "none";
+  });
+  closeBtn4.addEventListener("click", () => {
+    const eventModal = document.getElementById("eventModal1");
+    eventModal.style.display = "none";
+  });
+
+  function showEdit(arg){
+
+      var id = calendar.getEventById(arg.event.id);
+
+      $.ajax({
+        url: "/event/edit/" + id.id ,
+        success: function (data) {
+          $("#editEvent").html(data);
+
+          // show the modal
+          var modal = document.getElementById("eventModal1");
+          modal.style.display = "block";
+          calendar.unselect();
+        },
+      });
+      console.log("clicked");
+
+  }
+
+  const btn = document.getElementById("buttonEdit");
+  const dtl = document.getElementById("detail");
+  const div = document.getElementById("editEvent");
+  btn.addEventListener("click", () => {
+    dtl.style.display = "none";
+    div.style.display = "block";
+  });
+
+
+
+  $(document).ready(function () {
+    $("#repeatButton").click(function () {
+      $("#repeatModal").modal("show");
+    });
+
+    $("#repeatModal").on("shown.bs.modal", function () {
+      // Access the repeat form using its ID
+      var repeatForm = $("#repeatForm");
+      // Perform further actions or retrieve form data
+    });
+  });
+
+
+  $(document).ready(function () {
+    $("#userButton").click(function () {
+      $("#userModal").modal("show");
+    });
+
+    $("#userModal").on("shown.bs.modal", function () {
+      // Access the repeat form using its ID
+      var repeatForm = $("#userForm");
+      // Perform further actions or retrieve form data
+    });
+  });
+
+
+
+  // Wait for the document to be ready
+  $(document).ready(function() {
+    // Get the value field element
+    var valueField = $('#id_value select');
+
+    // Initially hide the byweekdayField div
+    $('#byweekdayContainer').hide();
+
+    // Add change event listener to the value field
+    valueField.change(function() {
+      var selectedValue = $(this).val();
+      if (selectedValue === 'W') {
+        $('#byweekdayContainer').show();
+      } else {
+        $('#byweekdayContainer').hide();
+      }
+    });
+  });
+
+      setTimeout(function(){
+        if ($('#msg').length > 0) {
+            $('#msg').remove();
+        }
+    },4000);
+
+
+</script>
+
+
+{% endblock extrascripts %}
